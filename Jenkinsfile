@@ -4,14 +4,18 @@ podTemplate(label: label, containers: [
   ]) {
 
     node(label) {
-        stage('Get a Maven project') {
+        stage('Preparation') {
             git 'https://github.com/anishnagaraj/fleetman-position-tracker'
-            container('maven') {
-                stage('Build a Maven project') {
-                    sh 'mvn -B clean install -DskipTests'
-                }
-            }
         }
-
+        container('maven') {
+                stage('Build') {
+                    sh 'mvn package'
+                }
+        }
+        stage('Results') {
+            junit '**/target/surefire-reports/TEST-*.xml'
+            archive 'target/*.jar'
+        }
+        
     }
 }
